@@ -1,5 +1,6 @@
-library(rvest)
 library(dplyr)
+library(httr)
+library(rvest)
 
 ################################################################################
 ### Configurable settings
@@ -7,6 +8,9 @@ library(dplyr)
 
 # What to search for
 query <- '("mental health"| depression| anxiety| well-being| wellbeing| "quality of life"| "life satisfaction"| "psychological distress") + (income*| "social security"| earning*| salar*| wage*| money| financ*| loan*| debt*| lottery| poverty| "cash transfer"| welfare) + (change*| alter*| shock*| w?n)'
+
+# Where to save the RIS output
+output_file <- "export.ris"
 
 # How many pages to try looking at - although it will stop automatically when
 # there are no results, so this doesn't matter too much as long as it's high
@@ -18,11 +22,15 @@ max_pages <- 100
 
 
 
+if (file.exists(output_file)) {
+  stop("Output file already exists. If you want to replace it, please delete it first (I'm too scared to do that automatically).")
+}
+
+url <- "https://ideas.repec.org/search.html"
+
 ################################################################################
 # Step 1: Visit each "results" page and store the URLs for each result.
 ################################################################################
-
-url <- "https://ideas.repec.org/search.html"
 
 # Initiate a session (necessary to submit the search form)
 session <- html_session(url)
@@ -35,8 +43,7 @@ search_form <- html_form(session)[[3]] %>%
   )
 
 # Submit the form and keep hold of the results page
-first_page <- session %>%
-  submit_form(search_form)
+first_page <- submit_form(session, search_form)
 
 # Get the generic URL for a "results" page for later use
 result_url <- first_page %>%
@@ -71,3 +78,25 @@ for (i in 0:max_pages) {
 result_urls <- unlist(result_urls)
 
 paste("Found", length(result_urls), "results.")
+
+
+
+
+################################################################################
+# Step 2: Visit the page for each result, and save its reference.
+################################################################################
+
+for (i in 1:length(result_urls)) {
+  # Visit the result URL, and request a reference in RIS format
+  result_page <- session %>%
+    jump_to(result_urls[[1]])
+
+  export_reference_form <- html_form(result_page)[[3]] %>%
+    set_values(output = "3") # "3" corresponds to "RIS (EndNote, RefMan, ProCite)"
+
+  reference_response <- submit_form(session, export_reference_form)
+  
+  # Append the RIS reference to the output file
+  ris_data <- content(reference_response$response, "text") %>% trimws()
+  cat(ris_data, "\n", file= output_file, append = TRUE)
+}
