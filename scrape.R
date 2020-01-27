@@ -12,10 +12,9 @@ query <- '("mental health"| depression| anxiety| well-being| wellbeing| "quality
 # Where to save the RIS output
 output_file <- "export.ris"
 
-# How many pages to try looking at - although it will stop automatically when
-# there are no results, so this doesn't matter too much as long as it's high
-# enough.
-max_pages <- 100
+# What page to begin and end with (starting with 0 - important!).
+from_page <- 0
+to_page   <- 0 # If you want all pages, set this to something high - it will stop when it reaches the end.
 
 ################################################################################
 
@@ -53,7 +52,7 @@ result_url <- first_page %>%
 result_urls <- list() # an empty list to store the results in
 
 # Visit each results page, and store the URL for each result on it
-for (i in 0:max_pages) {
+for (i in from_page:to_page) {
   # In order to request a specific page, we need to use the result URL with a
   # query parameter e.g. "&np=1" appended. First page is i=0.
   result_page <- session %>%
