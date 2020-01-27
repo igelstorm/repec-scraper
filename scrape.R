@@ -9,6 +9,13 @@ library(rvest)
 # What to search for
 query <- '("mental health"| depression| anxiety| well-being| wellbeing| "quality of life"| "life satisfaction"| "psychological distress") + (income*| "social security"| earning*| salar*| wage*| money| financ*| loan*| debt*| lottery| poverty| "cash transfer"| welfare) + (change*| alter*| shock*| w?n)'
 
+# Where to save the RIS output
+output_file <- "export.ris"
+
+# What page to begin and end with (starting with 0 - important!).
+from_page <- 0
+to_page   <- 100 # If you want all pages, set this to something high - it will stop when it reaches the end.
+
 # What publication type to search for
 # ""      = All
 # "%/a/%" = Articles
@@ -17,13 +24,6 @@ query <- '("mental health"| depression| anxiety| well-being| wellbeing| "quality
 # "%/b/%" = Books
 # "%/c/%" = Software
 publication_type <- "%/a/%"
-
-# Where to save the RIS output
-output_file <- "export.ris"
-
-# What page to begin and end with (starting with 0 - important!).
-from_page <- 0
-to_page   <- 100 # If you want all pages, set this to something high - it will stop when it reaches the end.
 
 ################################################################################
 
@@ -78,14 +78,14 @@ for (i in from_page:to_page) {
     break
   }
   
-  paste("Results on page", i + 1, ":")
+  paste("Results on page", i + 1) %>% print()
   result_urls[[i + 1]] <- urls_on_this_page
   print(urls_on_this_page)
 }
 
 result_urls <- unlist(result_urls)
 
-paste("Found", length(result_urls), "results.")
+paste("Found", length(result_urls), "results.") %>% print()
 
 
 
