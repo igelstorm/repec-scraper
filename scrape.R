@@ -103,18 +103,35 @@ paste("Found", length(result_urls), "results.") %>% print()
 # Step 2: Visit the page for each result, and save its reference.
 ################################################################################
 
+failed_urls <- c()
+
 for (i in 1:length(result_urls)) {
   # Visit the result URL, and request a reference in RIS format
   paste("Result", i, ":", result_urls[[i]]) %>% print()
-  result_page <- session %>%
-    jump_to(result_urls[[i]])
-
-  export_reference_form <- html_form(result_page)[[3]] %>%
-    set_values(output = "3") # "3" corresponds to "RIS (EndNote, RefMan, ProCite)"
-
-  reference_response <- submit_form(session, export_reference_form)
   
-  # Append the RIS reference to the output file
-  ris_data <- content(reference_response$response, "text") %>% trimws()
-  cat(ris_data, "\n", file= output_file, append = TRUE)
+  tryCatch(
+    {
+      result_page <- session %>%
+        jump_to(result_urls[[i]])
+      
+      export_reference_form <- html_form(result_page)[[3]] %>%
+        set_values(output = "3") # "3" corresponds to "RIS (EndNote, RefMan, ProCite)"
+      
+      reference_response <- submit_form(session, export_reference_form)
+      
+      # Append the RIS reference to the output file
+      ris_data <- content(reference_response$response, "text") %>% trimws()
+      cat(ris_data, "\n", file= output_file, append = TRUE)
+    },
+    error = function(cond) {
+      # TODO: Don't use <<- here - it's an antipattern. Probably better to extract some functions so we can return a status or something
+      failed_urls <<- c(failed_urls, result_urls[[i]])
+    }
+  )
+}
+
+print("Done.")
+if (length(failed_urls) != 0) {
+  paste(length(failed_urls), "references couldn't be retrieved:") %>% print()
+  cat(failed_urls, sep="\n")
 }
