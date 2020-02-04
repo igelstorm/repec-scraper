@@ -25,6 +25,14 @@ to_page   <- 100 # If you want all pages, set this to something high - it will s
 # "%/c/%" = Software
 publication_type <- "%/a/%"
 
+# What to search in
+# "4BFF"  = Whole record
+# "F000"  = Abstract
+# "0F00"  = Keywords
+# "00F0"  = Title
+# "000F"  = Author
+search_in <- "F000"
+
 ################################################################################
 
 
@@ -47,7 +55,8 @@ session <- html_session(url)
 search_form <- html_form(session)[[3]] %>%
   set_values(
     ul = publication_type,
-    q = query
+    q = query,
+    wf = search_in
   )
 
 # Submit the form and keep hold of the results page
