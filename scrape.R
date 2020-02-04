@@ -96,8 +96,9 @@ paste("Found", length(result_urls), "results.") %>% print()
 
 for (i in 1:length(result_urls)) {
   # Visit the result URL, and request a reference in RIS format
+  paste("Result", i, ":", result_urls[[i]]) %>% print()
   result_page <- session %>%
-    jump_to(result_urls[[1]])
+    jump_to(result_urls[[i]])
 
   export_reference_form <- html_form(result_page)[[3]] %>%
     set_values(output = "3") # "3" corresponds to "RIS (EndNote, RefMan, ProCite)"
