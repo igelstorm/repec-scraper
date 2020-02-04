@@ -104,6 +104,7 @@ paste("Found", length(result_urls), "results.") %>% print()
 ################################################################################
 
 failed_urls <- c()
+failed_numbers <- c()
 
 for (i in 1:length(result_urls)) {
   # Visit the result URL, and request a reference in RIS format
@@ -126,6 +127,7 @@ for (i in 1:length(result_urls)) {
     error = function(cond) {
       # TODO: Don't use <<- here - it's an antipattern. Probably better to extract some functions so we can return a status or something
       failed_urls <<- c(failed_urls, result_urls[[i]])
+      failed_numbers <<- c(failed_numbers, i)
     }
   )
 }
@@ -133,5 +135,9 @@ for (i in 1:length(result_urls)) {
 print("Done.")
 if (length(failed_urls) != 0) {
   paste(length(failed_urls), "references couldn't be retrieved:") %>% print()
-  cat(failed_urls, sep="\n")
+  print(
+    data.frame(number = failed_numbers, url = failed_urls),
+    right = FALSE,
+    row.names = FALSE
+  )
 }
