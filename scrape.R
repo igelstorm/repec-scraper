@@ -63,9 +63,7 @@ search_form <- html_form(session)[[3]] %>%
 first_page <- submit_form(session, search_form)
 
 # Get the generic URL for a "results" page for later use
-result_url <- first_page %>%
-  html_node("a.page-link") %>%
-  html_attr("href")
+result_url <- first_page$url
 
 result_urls <- list() # an empty list to store the results in
 
