@@ -1,6 +1,7 @@
 library(dplyr)
 library(httr)
 library(rvest)
+library(stringi)
 
 ################################################################################
 ### Configurable settings
@@ -104,6 +105,8 @@ paste("Found", length(result_urls), "results.") %>% print()
 failed_urls <- c()
 failed_numbers <- c()
 
+references <- list()
+
 for (i in 1:length(result_urls)) {
   # Visit the result URL, and request a reference in RIS format
   paste("Result", i, ":", result_urls[[i]]) %>% print()
@@ -118,9 +121,8 @@ for (i in 1:length(result_urls)) {
       
       reference_response <- submit_form(session, export_reference_form)
       
-      # Append the RIS reference to the output file
       ris_data <- content(reference_response$response, "text") %>% trimws()
-      cat(ris_data, "\n", file= output_file, append = TRUE)
+      references <- append(references, ris_data)
     },
     error = function(cond) {
       # TODO: Don't use <<- here - it's an antipattern. Probably better to extract some functions so we can return a status or something
@@ -129,6 +131,10 @@ for (i in 1:length(result_urls)) {
     }
   )
 }
+
+references %>%
+  stri_join_list(sep = "\n") %>%
+  stri_write_lines(output_file, sep = "\n")
 
 print("Done.")
 if (length(failed_urls) != 0) {
