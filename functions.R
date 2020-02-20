@@ -1,4 +1,6 @@
-get_references <- function() {
+get_references <- function(query,
+                           from_page = 0,
+                           to_page = 1000) {
   url <- "https://ideas.repec.org/search.html"
   
   ################################################################################
