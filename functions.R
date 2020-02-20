@@ -46,7 +46,7 @@ get_results <- function(query,
     print(urls_on_this_page)
   }
   
-  result_urls <- unlist(result_urls)
+  result_urls <- unlist(result_urls, use.names = FALSE)
   
   paste("Found", length(result_urls), "results.") %>% print()
   
@@ -54,35 +54,8 @@ get_results <- function(query,
 }
 
 get_references <- function(results) {
-  result_urls <- results$url
-  references <- list(result_urls)
-  
-  for (i in 1:length(result_urls)) {
-    # Visit the result URL, and request a reference in RIS format
-    paste("Result", i, ":", result_urls[[i]]) %>% print()
-    
-    tryCatch(
-      {
-        session <- html_session(.url_from(result_urls[[i]]))
-        
-        export_reference_form <- html_form(session)[[3]] %>%
-          set_values(output = "3") # "3" corresponds to "RIS (EndNote, RefMan, ProCite)"
-        
-        reference_response <- submit_form(session, export_reference_form)
-        
-        ris_data <- content(reference_response$response, "text") %>% trimws()
-        references <- append(references, ris_data)
-      },
-      error = function(cond) {
-        # TODO: Don't use <<- here - it's an antipattern. Probably better to extract some functions so we can return a status or something
-        print(cond)
-        failed_urls <<- c(failed_urls, result_urls[[i]])
-        failed_numbers <<- c(failed_numbers, i)
-      }
-    )
-  }
-  
-  return(references)
+  results$ris_data <- lapply(results$url, .get_reference)
+  results
 }
 
 .publication_type <- function(name) {
@@ -114,4 +87,23 @@ get_references <- function(results) {
   url <- url_parse("https://ideas.repec.org/")
   url$path <- path
   url_compose(url)
+}
+
+.get_reference <- function(path) {
+  tryCatch(
+    {
+      session <- html_session(.url_from(path))
+      
+      export_reference_form <- html_form(session)[[3]] %>%
+        set_values(output = "3") # "3" corresponds to "RIS (EndNote, RefMan, ProCite)"
+      
+      reference_response <- submit_form(session, export_reference_form)
+      
+      ris_data <- content(reference_response$response, "text") %>% trimws()
+      ris_data
+    },
+    error = function(cond) {
+      NA
+    }
+  )
 }

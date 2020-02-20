@@ -14,30 +14,25 @@ output_file <- "export.ris"
 
 ################################################################################
 
-# TODO: these are getting modified inside the function in a dirty way.
-# They should really be returned somehow or accessible another way.
-failed_urls <- c()
-failed_numbers <- c()
-
 results <- get_results(
   query = '("mental health"| depression| anxiety| well-being| wellbeing| "quality of life"| "life satisfaction"| "psychological distress") + (income*| "social security"| earning*| salar*| wage*| money| financ*| loan*| debt*| lottery| poverty| "cash transfer"| welfare) + (change*| alter*| shock*| w?n)',
   to_page = 0,
   publication_type = "articles",
   search_in = "abstract"
-)
+) %>%
+  get_references()
 
-references <- get_references(results)
-
-references %>%
+results$ris_data
+results$ris_data %>%
+  na.omit() %>%
   stri_join_list(sep = "\n") %>%
   stri_write_lines(output_file, sep = "\n")
 
 print("Done.")
-if (length(failed_urls) != 0) {
-  paste(length(failed_urls), "references couldn't be retrieved:") %>% print()
-  print(
-    data.frame(number = failed_numbers, url = failed_urls),
-    right = FALSE,
-    row.names = FALSE
-  )
+
+failures <- results[is.na(results$ris_data),]
+
+if (length(failures$url) != 0) {
+  paste(length(failures$url), "references couldn't be retrieved:") %>% print()
+  print(failures)
 }
