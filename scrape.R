@@ -19,14 +19,14 @@ output_file <- "export.ris"
 failed_urls <- c()
 failed_numbers <- c()
 
-urls <- get_urls(
+results <- get_results(
   query = '("mental health"| depression| anxiety| well-being| wellbeing| "quality of life"| "life satisfaction"| "psychological distress") + (income*| "social security"| earning*| salar*| wage*| money| financ*| loan*| debt*| lottery| poverty| "cash transfer"| welfare) + (change*| alter*| shock*| w?n)',
   to_page = 0,
   publication_type = "articles",
   search_in = "abstract"
 )
 
-references <- get_references(urls)
+references <- get_references(results)
 
 references %>%
   stri_join_list(sep = "\n") %>%

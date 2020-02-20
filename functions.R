@@ -1,10 +1,10 @@
 library(urltools)
 
-get_urls <- function(query,
-                           from_page = 0,
-                           to_page = 1000,
-                           publication_type = "all",
-                           search_in = "whole_record") {
+get_results <- function(query,
+                        from_page = 0,
+                        to_page = 1000,
+                        publication_type = "all",
+                        search_in = "whole_record") {
   url <- "https://ideas.repec.org/search.html"
   
   session <- html_session(url)
@@ -16,7 +16,6 @@ get_urls <- function(query,
       q = query,
       wf = .search_in(search_in)
     )
-  
   first_page <- submit_form(session, search_form)
   
   # Get the generic URL for a "results" page for later use
@@ -51,14 +50,11 @@ get_urls <- function(query,
   
   paste("Found", length(result_urls), "results.") %>% print()
   
-  result_urls
+  data.frame(url = result_urls)
 }
 
-get_references <- function(result_urls) {
-  ################################################################################
-  # Step 2: Visit the page for each result, and save its reference.
-  ################################################################################
-  
+get_references <- function(results) {
+  result_urls <- results$url
   references <- list(result_urls)
   
   for (i in 1:length(result_urls)) {
