@@ -12,28 +12,18 @@ source("./functions.R")
 # Where to save the RIS output
 output_file <- "export.ris"
 
-# What publication type to search for
-# ""      = All
-# "%/a/%" = Articles
-# "%/p/%" = Papers
-# "%/h/%" = Chapters
-# "%/b/%" = Books
-# "%/c/%" = Software
-publication_type <- "%/a/%"
-
-# What to search in
-# "4BFF"  = Whole record
-# "F000"  = Abstract
-# "0F00"  = Keywords
-# "00F0"  = Title
-# "000F"  = Author
-search_in <- "F000"
-
 ################################################################################
+
+# TODO: these are getting modified inside the function in a dirty way.
+# They should really be returned somehow or accessible another way.
+failed_urls <- c()
+failed_numbers <- c()
 
 references <- get_references(
   query = '("mental health"| depression| anxiety| well-being| wellbeing| "quality of life"| "life satisfaction"| "psychological distress") + (income*| "social security"| earning*| salar*| wage*| money| financ*| loan*| debt*| lottery| poverty| "cash transfer"| welfare) + (change*| alter*| shock*| w?n)',
-  to_page = 0
+  to_page = 0,
+  publication_type = "articles",
+  search_in = "abstract"
 )
 
 references %>%

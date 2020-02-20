@@ -1,6 +1,8 @@
 get_references <- function(query,
                            from_page = 0,
-                           to_page = 1000) {
+                           to_page = 1000,
+                           publication_type = "all",
+                           search_in = "whole_record") {
   url <- "https://ideas.repec.org/search.html"
   
   ################################################################################
@@ -13,9 +15,9 @@ get_references <- function(query,
   # Set the inputs in the form to desired values
   search_form <- html_form(session)[[3]] %>%
     set_values(
-      ul = publication_type,
+      ul = .publication_type(publication_type),
       q = query,
-      wf = search_in
+      wf = .search_in(search_in)
     )
   
   # Submit the form and keep hold of the results page
@@ -60,9 +62,6 @@ get_references <- function(query,
   # Step 2: Visit the page for each result, and save its reference.
   ################################################################################
   
-  failed_urls <- c()
-  failed_numbers <- c()
-  
   references <- list()
   
   for (i in 1:length(result_urls)) {
@@ -91,4 +90,29 @@ get_references <- function(query,
   }
   
   return(references)
+}
+
+.publication_type <- function(name) {
+  switch(
+    name,
+    "all" = "",
+    "articles" = "%/a/%",
+    "papers" = "%/p/%",
+    "chapters" = "%/h/%",
+    "books" = "%/b/%",
+    "software" = "%/c/%",
+    stop("Unknown publication type.")
+  )
+}
+
+.search_in <- function(name) {
+  switch(
+    name,
+    "whole_record" = "4BFF",
+    "abstract" = "F000",
+    "keywords" = "0F00",
+    "title" = "00F0",
+    "author" = "000F",
+    stop("Unknown field to search in.")
+  )  
 }
