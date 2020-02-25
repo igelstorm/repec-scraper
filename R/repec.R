@@ -1,6 +1,16 @@
+#' Search the RePEc IDEAS database.
+#' 
+#' `repec_search` performs a search and returns the results as a data frame.
+#' 
+#' @param query The search terms to use.
+#' @param from_page Integer describing which page of results to start on (the first page is 0).
+#' @param to_page Integer describing which page of results to end on.
+#' @param publication_type String describing which publication type to search. Possible values: `all`, `articles`, `papers`, `chapters`, `books`, `software`
+#' @param search_in String describing which fields to search in. Possible values: `whole_record`, `abstract`, `keywords`, `title`, `author`
+#' @return A data frame containing the URL for each search result.
 #' @importFrom magrittr %>%
 #' @export
-get_results <- function(query,
+repec_search <- function(query,
                         from_page = 0,
                         to_page = 1000,
                         publication_type = "all",
