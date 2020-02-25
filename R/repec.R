@@ -12,9 +12,9 @@ get_results <- function(query,
   # Fill in and submit the search form
   search_form <- rvest::html_form(session)[[3]] %>%
     rvest::set_values(
-      ul = .publication_type(publication_type),
+      ul = publication_type(publication_type),
       q = query,
-      wf = .search_in(search_in)
+      wf = search_in(search_in)
     )
   first_page <- rvest::submit_form(session, search_form)
 
@@ -55,11 +55,11 @@ get_results <- function(query,
 
 #' @export
 get_references <- function(results) {
-  results$ris_data <- lapply(results$url, .get_reference)
+  results$ris_data <- lapply(results$url, get_reference)
   results
 }
 
-.publication_type <- function(name) {
+publication_type <- function(name) {
   switch(
     name,
     "all" = "",
@@ -72,7 +72,7 @@ get_references <- function(results) {
   )
 }
 
-.search_in <- function(name) {
+search_in <- function(name) {
   switch(
     name,
     "whole_record" = "4BFF",
@@ -84,17 +84,17 @@ get_references <- function(results) {
   )
 }
 
-.url_from <- function(path) {
+url_from <- function(path) {
   url <- urltools::url_parse("https://ideas.repec.org/")
   url$path <- path
   urltools::url_compose(url)
 }
 
 #' @importFrom magrittr %>%
-.get_reference <- function(path) {
+get_reference <- function(path) {
   tryCatch(
     {
-      session <- rvest::html_session(.url_from(path))
+      session <- rvest::html_session(url_from(path))
 
       export_reference_form <- rvest::html_form(session)[[3]] %>%
         rvest::set_values(output = "3") # "3" corresponds to "RIS (EndNote, RefMan, ProCite)"
