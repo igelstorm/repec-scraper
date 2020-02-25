@@ -1,3 +1,5 @@
+#' @importFrom magrittr %>%
+#' @export
 get_results <- function(query,
                         from_page = 0,
                         to_page = 1000,
@@ -5,16 +7,16 @@ get_results <- function(query,
                         search_in = "whole_record") {
   url <- "https://ideas.repec.org/search.html"
 
-  session <- html_session(url)
+  session <- rvest::html_session(url)
 
   # Fill in and submit the search form
-  search_form <- html_form(session)[[3]] %>%
-    set_values(
+  search_form <- rvest::html_form(session)[[3]] %>%
+    rvest::set_values(
       ul = .publication_type(publication_type),
       q = query,
       wf = .search_in(search_in)
     )
-  first_page <- submit_form(session, search_form)
+  first_page <- rvest::submit_form(session, search_form)
 
   # Get the generic URL for a "results" page for later use
   result_url <- first_page$url
@@ -26,13 +28,13 @@ get_results <- function(query,
     # In order to request a specific page, we need to use the result URL with a
     # query parameter e.g. "&np=1" appended. First page is i=0.
     result_page <- session %>%
-      jump_to(result_url, query = list(np = i))
+      rvest::jump_to(result_url, query = list(np = i))
 
     urls_on_this_page <- result_page %>%
-      html_node("ol.list-group") %>%
-      html_nodes("li") %>%
-      html_nodes("a") %>%
-      html_attr("href")
+      rvest::html_node("ol.list-group") %>%
+      rvest::html_nodes("li") %>%
+      rvest::html_nodes("a") %>%
+      rvest::html_attr("href")
 
     if (length(urls_on_this_page) == 0) {
       print("No more results.")
@@ -51,6 +53,7 @@ get_results <- function(query,
   data.frame(url = result_urls)
 }
 
+#' @export
 get_references <- function(results) {
   results$ris_data <- lapply(results$url, .get_reference)
   results
@@ -82,22 +85,23 @@ get_references <- function(results) {
 }
 
 .url_from <- function(path) {
-  url <- url_parse("https://ideas.repec.org/")
+  url <- urltools::url_parse("https://ideas.repec.org/")
   url$path <- path
-  url_compose(url)
+  urltools::url_compose(url)
 }
 
+#' @importFrom magrittr %>%
 .get_reference <- function(path) {
   tryCatch(
     {
-      session <- html_session(.url_from(path))
+      session <- rvest::html_session(.url_from(path))
 
-      export_reference_form <- html_form(session)[[3]] %>%
-        set_values(output = "3") # "3" corresponds to "RIS (EndNote, RefMan, ProCite)"
+      export_reference_form <- rvest::html_form(session)[[3]] %>%
+        rvest::set_values(output = "3") # "3" corresponds to "RIS (EndNote, RefMan, ProCite)"
 
-      reference_response <- submit_form(session, export_reference_form)
+      reference_response <- rvest::submit_form(session, export_reference_form)
 
-      ris_data <- content(reference_response$response, "text") %>% trimws()
+      ris_data <- httr::content(reference_response$response, "text") %>% trimws()
       ris_data
     },
     error = function(cond) {

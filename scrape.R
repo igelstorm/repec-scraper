@@ -1,9 +1,7 @@
-library(dplyr)
-library(httr)
-library(rvest)
 library(stringi)
+library(magrittr)
 
-source("./functions.R")
+library(repecscraper)
 
 ################################################################################
 ### Configurable settings
@@ -22,7 +20,6 @@ results <- get_results(
 ) %>%
   get_references()
 
-results$ris_data
 results$ris_data %>%
   na.omit() %>%
   stri_join_list(sep = "\n") %>%
