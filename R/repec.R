@@ -1,6 +1,20 @@
-#' Search the RePEc IDEAS database.
+#' Search the RePEc IDEAS database
 #' 
-#' `repec_search` performs a search and returns the results as a data frame.
+#' Automatically searches RePEc IDEAS and, returns the results as a data frame.
+#' 
+#' The output of this function will be a data frame that only contains the URL
+#' for each search result, and no other information. In order to fetch the full
+#' reference, you will need to pass this data frame to the [get_references()]
+#' function, which will visit each URL and extract the full reference data.
+#' 
+#' These URLs are more or less permanent (i.e. they are not specific to each
+#' search, and do not expire), so once a search has been made, it should be safe
+#' to save these URLs and fetch the full references using [get_references()] at
+#' a later stage. In other words, if the exact timing of the search is important
+#' to you, it should only matter when you run [repec_search()], not when you run
+#' [get_references()].
+#' 
+#' @seealso [get_references()] for fetching the full references for each search result.
 #' 
 #' @param query The search terms to use.
 #' @param from_page Integer describing which page of results to start on (the first page is 0).
@@ -63,6 +77,15 @@ repec_search <- function(query,
   data.frame(url = result_urls)
 }
 
+#' Fetch full references for search results from RePEc IDEAS
+#' 
+#' Automatically fetches full reference data for a list of search results
+#' returned by the [repec_search()] function.
+#' 
+#' @seealso [repec_search()] for performing the initial search.
+#' 
+#' @param results A data frame containing the URLs of one or more RePEc search results (see [repec_search()]).
+#' @return A new data frame, with reference data for each search result added.
 #' @export
 get_references <- function(results) {
   results$ris_data <- lapply(results$url, get_reference)
