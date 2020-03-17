@@ -7,15 +7,17 @@
 get_references(results)
 }
 \arguments{
-\item{results}{A data frame containing the URLs of one or more RePEc search results (see [repec_search()]).}
+\item{results}{A data frame containing the URLs of one or more RePEc search
+results (see \code{\link{repec_search}}).}
 }
 \value{
 A new data frame, with reference data for each search result added.
 }
 \description{
 Automatically fetches full reference data for a list of search results
-returned by the [repec_search()] function.
+returned by the \code{\link{repec_search}} function.
 }
 \seealso{
-[repec_search()] for performing the initial search.
+\code{\link{repec_search}} for performing the initial search, and
+  \code{\link{write_references}} for saving the references to a file.
 }

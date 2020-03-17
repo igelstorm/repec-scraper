@@ -15,13 +15,17 @@ repec_search(
 \arguments{
 \item{query}{The search terms to use.}
 
-\item{from_page}{Integer describing which page of results to start on (the first page is 0).}
+\item{from_page}{Integer describing which page of results to start on (the
+first page is 0).}
 
 \item{to_page}{Integer describing which page of results to end on.}
 
-\item{publication_type}{String describing which publication type to search. Possible values: `all`, `articles`, `papers`, `chapters`, `books`, `software`}
+\item{publication_type}{String describing which publication type to search.
+Possible values: `all`, `articles`, `papers`, `chapters`, `books`,
+`software`}
 
-\item{search_in}{String describing which fields to search in. Possible values: `whole_record`, `abstract`, `keywords`, `title`, `author`}
+\item{search_in}{String describing which fields to search in. Possible
+values: `whole_record`, `abstract`, `keywords`, `title`, `author`}
 }
 \value{
 A data frame containing the URL for each search result.
@@ -32,16 +36,19 @@ Automatically searches RePEc IDEAS and, returns the results as a data frame.
 \details{
 The output of this function will be a data frame that only contains the URL
 for each search result, and no other information. In order to fetch the full
-reference, you will need to pass this data frame to the [get_references()]
-function, which will visit each URL and extract the full reference data.
+reference, you will need to pass this data frame to the
+\code{\link{get_references}} function, which will visit each URL and extract
+the full reference data.
 
 These URLs are more or less permanent (i.e. they are not specific to each
 search, and do not expire), so once a search has been made, it should be safe
-to save these URLs and fetch the full references using [get_references()] at
-a later stage. In other words, if the exact timing of the search is important
-to you, it should only matter when you run [repec_search()], not when you run
-[get_references()].
+to save these URLs and fetch the full references using
+\code{\link{get_references}} at a later stage. In other words, if the exact
+timing of the search is important to you, it should only matter when you run
+\code{\link{repec_search}}, not when you run \code{\link{get_references}}.
 }
 \seealso{
-[get_references()] for fetching the full references for each search result.
+\code{\link{get_references}} for fetching the full reference for
+  each search result, and \code{\link{write_references}} for saving the
+  references to a file.
 }
