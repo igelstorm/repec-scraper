@@ -8,11 +8,48 @@ This is an R script that searches RePEc, downloads each result in RIS format (su
 
 ## How do I use it?
 
-Briefly:
+Install the package:
 
-1. Clone this repo, or download the `scrape.R` file.
-2. Edit the variables at the top of the file according to the search you want to make. (See the comments for more details.)
-3. Run the entire file (or "source" it in RStudio).
-4. An RIS file will appear in the working directory.
+```r
+install.packages("devtools")
+devtools::install_github("igelstorm/repecscraper")
+```
 
-This script was written to facilitate [a specific systematic review](https://www.crd.york.ac.uk/prospero/display_record.php?RecordID=168379), and a more streamlined user experience than this wasn't needed at the time. There is a [work-in-progress PR](https://github.com/igelstorm/repec-scraper/pull/1) to turn this into an R package that will be significantly nicer to use. If you'd like to use this tool, and are willing to wait while I finish this, feel free to comment on the PR to let me know, and I might be able to hurry it up.
+Use `repec_search` to perform a search:
+
+```r
+library(repecscraper)
+
+results <- repec_search(
+  query = 'recession and "mental health"',
+  publication_type = "articles",
+  search_in = "abstract"
+)
+```
+
+Use `get_references` to download the RIS reference data for each result (this might take a while):
+
+```r
+results <- get_references(results)
+```
+
+Then use `write_references` to save them all as a single RIS file:
+
+```r
+write_references(results, "export.ris")
+```
+
+See the documentation (`?repec_search`, `?get_references`, `write_references`) for more details on how to use each function.
+
+If you are so inclined, these functions are also very amenable to combining with [the pipe operator](https://magrittr.tidyverse.org/):
+
+```r
+library(repecscraper)
+library(magrittr)
+
+repec_search(query = 'recession and "mental health"') %>%
+  get_references() %>%
+  write_references("export.ris")
+```
+
+However, it's probably often a good idea to perform each step separately, and store the intermediate results, since each step can take a while, and errors or unexpected results are possible.
