@@ -2,4 +2,5 @@
 
 export(get_references)
 export(repec_search)
+export(write_references)
 importFrom(magrittr,"%>%")

@@ -6,6 +6,11 @@
 \usage{
 write_references(results, file_name)
 }
+\arguments{
+\item{results}{A data frame containing RIS reference data.}
+
+\item{file_name}{The path to write the output to.}
+}
 \description{
 Saves references retrieved using \code{\link{get_references}} to a file.
 }
