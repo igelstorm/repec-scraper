@@ -41,17 +41,15 @@ write_references(results, "export.ris")
 
 See the documentation (`?repec_search`, `?get_references`, `write_references`) for more details on how to use each function.
 
-If you are so inclined, these functions are also very amenable to combining with [pipe operators](https://magrittr.tidyverse.org/). This code does the same thing as the examples above:
+If you are so inclined, these functions are also very amenable to combining with [the pipe operator](https://magrittr.tidyverse.org/):
 
 ```r
 library(repecscraper)
 library(magrittr)
 
-results <- repec_search(
-  query = 'recession and "mental health"',
-  publication_type = "articles",
-  search_in = "abstract"
-) %>%
+repec_search(query = 'recession and "mental health"') %>%
   get_references() %>%
   write_references("export.ris")
 ```
+
+However, it's probably often a good idea to perform each step separately, and store the intermediate results, since each step can take a while, and errors or unexpected results are possible.
