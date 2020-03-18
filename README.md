@@ -2,9 +2,11 @@
 
 ## What is this?
 
+This is an R package that can be used to automate searching the [RePEc IDEAS](https://ideas.repec.org/) database, and saving the search results as an RIS file (supported by most reference managers, e.g. EndNote, Zotero and Mendeley).
+
 [RePEc IDEAS](https://ideas.repec.org/) is one of the largest bibliographic databases for economics research. The database can be searched for free, and it's possible to export individual references, but there is no way to batch export references for a large number of search results (as you could in, say, Ovid or Web of Science). This makes it impractical to use in systematic reviews (for example), where you might need to download hundreds or thousands of references.
 
-This is an R script that searches RePEc, downloads each result in RIS format (supported by most reference managers, e.g. EndNote, Zotero and Mendeley), and saves them as a single RIS file.
+Under the hood, this package uses the [rvest](https://rvest.tidyverse.org/) package to search the RePEc IDEAS website, visit the pages for each result, and save the references. As a consequence, it's very reliant on this website continuing to work in roughly the same way -- if it changes, it's to be expected that this code will break in some way. If this happens, feel free to [open an issue](https://github.com/igelstorm/repecscraper/issues). You're also more than welcome to clone the package, make any changes you need, and submit a pull request.
 
 ## How do I use it?
 
