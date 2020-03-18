@@ -32,10 +32,10 @@
 #' @importFrom magrittr %>%
 #' @export
 repec_search <- function(query,
-                        from_page = 0,
-                        to_page = 1000,
-                        publication_type = "all",
-                        search_in = "whole_record") {
+                         from_page = 0,
+                         to_page = 1000,
+                         publication_type = "all",
+                         search_in = "whole_record") {
   url <- "https://ideas.repec.org/search.html"
 
   session <- rvest::html_session(url)
@@ -84,40 +84,6 @@ repec_search <- function(query,
   data.frame(url = result_urls)
 }
 
-#' Fetch full references for search results from RePEc IDEAS
-#' 
-#' Automatically fetches full reference data for a list of search results
-#' returned by the \code{\link{repec_search}} function.
-#' 
-#' @seealso \code{\link{repec_search}} for performing the initial search, and
-#'   \code{\link{write_references}} for saving the references to a file.
-#' 
-#' @param results A data frame containing the URLs of one or more RePEc search
-#'   results (see \code{\link{repec_search}}).
-#' @return A new data frame, with reference data for each search result added.
-#' @export
-get_references <- function(results) {
-  results$ris_data <- lapply(results$url, get_reference)
-  results
-}
-
-#' Save references downloaded from RePEc IDEAS to a file
-#' 
-#' Saves references retrieved using \code{\link{get_references}} to a file.
-#' 
-#' @seealso \code{\link{repec_search}} for performing the initial search, and
-#'   \code{\link{get_references}} for retrieving reference data.
-#'
-#' @param results A data frame containing RIS reference data.
-#' @param file_name The path to write the output to.
-#' @export
-write_references <- function(results, file_name) {
-  results$ris_data %>%
-    stats::na.omit() %>%
-    stringi::stri_join_list(sep = "\n") %>%
-    stringi::stri_write_lines(file_name, sep = "\n")
-}
-
 publication_type <- function(name) {
   switch(
     name,
@@ -140,31 +106,5 @@ search_in <- function(name) {
     "title" = "00F0",
     "author" = "000F",
     stop("Unknown field to search in.")
-  )
-}
-
-url_from <- function(path) {
-  url <- urltools::url_parse("https://ideas.repec.org/")
-  url$path <- path
-  urltools::url_compose(url)
-}
-
-#' @importFrom magrittr %>%
-get_reference <- function(path) {
-  tryCatch(
-    {
-      session <- rvest::html_session(url_from(path))
-
-      export_reference_form <- rvest::html_form(session)[[3]] %>%
-        rvest::set_values(output = "3") # "3" corresponds to "RIS (EndNote, RefMan, ProCite)"
-
-      reference_response <- rvest::submit_form(session, export_reference_form)
-
-      ris_data <- httr::content(reference_response$response, "text") %>% trimws()
-      ris_data
-    },
-    error = function(cond) {
-      NA
-    }
   )
 }
